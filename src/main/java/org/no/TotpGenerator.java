@@ -12,14 +12,14 @@ public class TotpGenerator {
 
     private TotpGenerator() {
         String WORK_DIR = System.getProperty("user.dir");
-        dotenv = Dotenv.configure().filename("codes.yml").ignoreIfMissing().directory(WORK_DIR).load();
+        dotenv = Dotenv.configure().filename("codes.env").ignoreIfMissing().directory(WORK_DIR).load();
     }
 
     private void work() {
         var users = dotenv.entries().stream().map(DotenvEntry::getKey).filter(key -> key.startsWith("totp"))
                 .collect(Collectors.toList());
         if(users.isEmpty()) {
-            System.out.println("no totp data provided, check your codes.yml file");
+            System.out.println("no totp data provided, check your codes.env file");
             System.out.println("exiting...");
             System.exit(1);
         }
