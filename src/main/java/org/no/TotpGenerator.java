@@ -5,6 +5,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvEntry;
 
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 public class TotpGenerator {
@@ -24,12 +25,20 @@ public class TotpGenerator {
             System.exit(1);
         }
         Timer time = new Timer();
-        users.forEach(user -> {
-                var secretCode = dotenv.get(user);
-                var task = new PrintNewTotpCodeTask(user, TOTPGenerator.withDefaultValues(secretCode.getBytes()));
-                time.schedule(task, 0, 1000);
+        var dummyTotp = TOTPGenerator.withDefaultValues("bla-bla".getBytes());
+        var task = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("============ ^_^ ============");
+                users.stream().sorted().forEachOrdered(user -> {
+                    var totpGenerator = TOTPGenerator.withDefaultValues(dotenv.get(user).getBytes());
+                    var totpCode = totpGenerator.now();
+                    System.out.printf("%s: %s\n", user, totpCode);
+                });
             }
-        );
+        };
+        task.run();
+        time.schedule(task, dummyTotp.durationUntilNextTimeWindow().toMillis(), dummyTotp.getPeriod().toMillis());
     }
 
     public static void main(String[] args) {
