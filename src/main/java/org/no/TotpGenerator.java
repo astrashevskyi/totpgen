@@ -33,7 +33,7 @@ public class TotpGenerator {
                 users.stream().sorted().forEachOrdered(user -> {
                     var totpGenerator = TOTPGenerator.withDefaultValues(dotenv.get(user).getBytes());
                     var totpCode = totpGenerator.now();
-                    System.out.printf("%s: %s\n", user, totpCode);
+                    System.out.printf("%s: \t\t%s\n", user, totpCode);
                 });
             }
         };
